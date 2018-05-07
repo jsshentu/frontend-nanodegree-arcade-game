@@ -1,3 +1,7 @@
 body {
     text-align: center;
 }
+
+#panel, .score {
+	font-size: 30px;
+}
