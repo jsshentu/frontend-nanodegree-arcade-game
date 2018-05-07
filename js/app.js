@@ -1,3 +1,5 @@
+let score = 0;
+
 // Enemies our player must avoid
 var Enemy = function(x, y, speed) {
     // Variables applied to each of our instances go here,
@@ -19,8 +21,26 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x = this.speed * dt + this.x;
 
+    //make sure the enemies will not move off screen
     if(this.x > 505) {
         this.x = 0;
+    }
+
+    //check for the collision
+    if(Math.abs(this.x - player.x) < 5 && Math.abs(this.y - player.y) <= 5) {
+        //decrease the score
+        score--;
+        //reset player's position
+        player.reset();
+        //render the correct score on the page
+        $(".score").text(() => {
+            if(score > 0){
+                return score;
+            } else {
+                score = 0;
+                return score;
+            }
+        });
     }
 };
 
@@ -28,6 +48,7 @@ Enemy.prototype.update = function(dt) {
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -45,6 +66,21 @@ Player.prototype.update = function() {
     } else if(this.x > 400){
         this.x = 400;
     } else if(this.y < 0){
+        //increment score by 1
+        score++;
+        //render the score on the page
+        $('.score').text(() => {
+            return score;
+        });
+        //check the condition of winning the game
+        if(score === 5){
+            if(window.confirm("Congratulations! Do you want to play again?")){
+                location.reload();
+            } else {
+                window.close();
+            }
+        }
+        //reach the water area, reset the player
         this.reset();
     } else if(this.y > 400){
         this.y = 400;
@@ -60,12 +96,13 @@ Player.prototype.render = function() {
 
 //handle the input from the user
 Player.prototype.handleInput = function(input) {
+    //move the player based on the user input
     if(input === "left"){
-        this.x -= 50;
+        this.x -= 100;
     } else if(input === "up"){
         this.y -= 85;
     } else if(input === "right"){
-        this.x += 50;
+        this.x += 100;
     } else if(input === "down"){
         this.y += 85;
     }
@@ -88,25 +125,19 @@ const allEnemies = [];
 //Array for 3 Y positions
 const positionY = [60, 140, 225];
 
-
+//generate enemies
 for(let i = 0; i < 5; i++){
     //get the random speed
-    let randomSpeed = Math.random() * (150 - 40) + 40;
+    let randomSpeed = Math.random() * (150 - 50) + 50;
     //get the random Y position
     let randomY = positionY[Math.floor(Math.random() * positionY.length)];
-    
+    //push enemies into allEnemies array
     allEnemies.push(new Enemy(0, randomY, randomSpeed));
 }
 
-
+//player instance
 let player = new Player(200, 400);
 
-
-function checkForCollision(location1, location2) {
-    if(location1[0] === location2[0] && location1[1] === location2[1]){
-        player.reset();
-    }
-}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -119,5 +150,4 @@ document.addEventListener('keyup', function(e) {
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
-    console.log(e.keyCode);
 });
