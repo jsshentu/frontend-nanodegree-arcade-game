@@ -1,7 +1,7 @@
 let score = 0;
 
 // Enemies our player must avoid
-var Enemy = function(x, y, speed) {
+const Enemy = function(x, y, speed) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
@@ -27,7 +27,7 @@ Enemy.prototype.update = function(dt) {
     }
 
     //check for the collision
-    if(Math.abs(this.x - player.x) < 5 && Math.abs(this.y - player.y) <= 5) {
+    if(Math.abs(this.x - player.x) < 70 && Math.abs(this.y - player.y) <= 70) {
         //decrease the score
         score--;
         //reset player's position
